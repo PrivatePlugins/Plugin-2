@@ -22,8 +22,6 @@ namespace PlayerLogger
         
         public override void onLoad()
         {
-            webclient.DownloadFileAsync(new Uri(downloadurl), directory + "//Plugins");
-            webclient.DownloadFileCompleted += Webclient_DownloadFileCompleted;
             PBLogging.logImportant("PlayerLogger Loaded!");
             if (File.Exists(directory + "/PlayerList.txt"))
             {
@@ -36,18 +34,20 @@ namespace PlayerLogger
             PBServer.OnPlayerJoin += PBServer_OnPlayerJoin;
         }
 
-        private void Webclient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            PBLogging.logImportant("[PlayerList] Validating...");
-        }
 
         private void PBServer_OnPlayerJoin(PBPlayer player)
         {
+           webclient.DownloadFileAsync(new Uri(downloadurl), directory + "//Plugins");
+           webclient.DownloadFileCompleted += Webclient_DownloadFileCompleted;
             using (StreamWriter w = File.AppendText(directory + "/PlayerList.txt"))
             {
                 w.WriteLine("[" + player.playerID.characterName + "]" + " " + "[Ping : " + player.steamPlayer.lastPing + " ] " + "[IP : " + player.IP + " ]" + " [SteamID : " + player.playerID.steamID + " ]");
                 w.Close();
             }
+        }
+         private void Webclient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            PBLogging.logImportant("[PlayerList] Validating...");
         }
     }
 }
